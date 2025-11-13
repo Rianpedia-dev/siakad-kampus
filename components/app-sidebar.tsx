@@ -150,15 +150,17 @@ const staticData = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession()
   
-  const userData = session?.user ? {
-    name: session.user.name || "User",
-    email: session.user.email,
-    avatar: session.user.image || "/codeguide-logo.png",
-  } : {
-    name: "Guest",
-    email: "guest@example.com", 
-    avatar: "/codeguide-logo.png",
-  }
+  const userData = session?.user
+    ? {
+        name: session.user.username || session.user.email || "User",
+        email: session.user.email,
+        avatar: session.user.image || "/codeguide-logo.png",
+      }
+    : {
+        name: "Guest",
+        email: "guest@example.com",
+        avatar: "/codeguide-logo.png",
+      }
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>

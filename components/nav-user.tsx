@@ -1,6 +1,5 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { signOut } from "@/lib/auth-client"
 import {
@@ -42,14 +41,12 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
-  const router = useRouter()
   const [isSigningOut, setIsSigningOut] = useState(false)
 
   const handleSignOut = async () => {
     setIsSigningOut(true)
     try {
-      await signOut()
-      router.push("/")
+      await signOut({ callbackUrl: "/" })
     } catch (error) {
       console.error("Sign out error:", error)
     } finally {

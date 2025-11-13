@@ -15,13 +15,14 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function AuthButtons() {
-  const { data: session, isPending } = useSession();
+  const { data: session, status } = useSession();
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const isLoading = status === "loading";
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
     try {
-      await signOut();
+      await signOut({ callbackUrl: "/login" });
     } catch (error) {
       console.error("Sign out error:", error);
     } finally {
@@ -29,7 +30,7 @@ export function AuthButtons() {
     }
   };
 
-  if (isPending) {
+  if (isLoading) {
     return (
       <div className="flex items-center gap-2">
         <div className="h-8 w-16 animate-pulse rounded bg-muted" />
@@ -40,13 +41,13 @@ export function AuthButtons() {
 
   if (session?.user) {
     const user = session.user;
-    const initials = user.name
-      ? user.name
-          .split(" ")
-          .map((n) => n[0])
-          .join("")
-          .toUpperCase()
-      : user.email?.[0]?.toUpperCase() || "U";
+    const displayName = user.username || user.email || "Pengguna";
+    const initials = displayName
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
 
     return (
       <DropdownMenu>
@@ -61,8 +62,8 @@ export function AuthButtons() {
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <div className="flex items-center justify-start gap-2 p-2">
             <div className="flex flex-col space-y-1 leading-none">
-              {user.name && (
-                <p className="font-medium">{user.name}</p>
+              {displayName && (
+                <p className="font-medium capitalize">{displayName}</p>
               )}
               {user.email && (
                 <p className="w-[200px] truncate text-sm text-muted-foreground">
@@ -94,13 +95,13 @@ export function AuthButtons() {
   return (
     <div className="flex items-center gap-2">
       <Button asChild variant="ghost" size="sm">
-        <Link href="/sign-in">
+        <Link href="/login">
           <LogIn className="mr-2 h-4 w-4" />
           Sign In
         </Link>
       </Button>
       <Button asChild size="sm">
-        <Link href="/sign-up">
+        <Link href="/register">
           <UserPlus className="mr-2 h-4 w-4" />
           Sign Up
         </Link>
@@ -111,9 +112,10 @@ export function AuthButtons() {
 
 // Simplified version for hero section
 export function HeroAuthButtons() {
-  const { data: session, isPending } = useSession();
+  const { data: session, status } = useSession();
+  const isLoading = status === "loading";
 
-  if (isPending) {
+  if (isLoading) {
     return (
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
         <div className="h-12 w-32 animate-pulse rounded-lg bg-muted" />
@@ -138,13 +140,13 @@ export function HeroAuthButtons() {
   return (
     <div className="flex flex-col sm:flex-row gap-4 justify-center">
       <Button asChild size="lg" className="text-base px-8 py-3">
-        <Link href="/sign-up">
+        <Link href="/register">
           <UserPlus className="mr-2 h-5 w-5" />
           Get Started
         </Link>
       </Button>
       <Button asChild variant="outline" size="lg" className="text-base px-8 py-3">
-        <Link href="/sign-in">
+        <Link href="/login">
           <LogIn className="mr-2 h-5 w-5" />
           Sign In
         </Link>
